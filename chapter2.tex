@@ -14,7 +14,7 @@ Paired-end sequencing is a sequencing method where reads are generated from both
     \label{readpair}
 \end{figure}
 \subsection{Read Depth}
-Read depth is a simple method to detect duplications and deletions at a higher resolution. Based on the assumption that regions are randomly sequenced, for reads that are mapped to all possible locations of the reference genome, the depth of duplicated regions will be higher and the depth of deleted regions will be lower than average \cite{bailey2002recent} as shown in Figure \ref{readdepth}. Multiple read-mapping is an important aspect of read depth to work effectively. Otherwise the diffence of depth between duplicated regions and deleted regions will be insignificant. However known sequencing bias against GC-rich and GC-poor regions \cite{smith2008rapid} should be handled carefully.
+Read depth is a simple method to detect duplications and deletions at a higher resolution. Based on the assumption that regions are randomly sequenced, for reads that are mapped to all possible locations of the reference genome, the depth of duplicated regions will be higher and the depth of deleted regions will be lower than average \cite{bailey2002recent} as shown in Figure \ref{readdepth}. Multiple read-mapping is an important aspect of read depth to work effectively. Otherwise the difference of depth between duplicated regions and deleted regions will be insignificant. However known sequencing bias against GC-rich and GC-poor regions \cite{smith2008rapid} should be handled carefully.
 
 \begin{figure}[ht]
     \centering
@@ -30,16 +30,18 @@ Originally designed for longer reads (Sanger sequence etc.), split read based me
 Although it is in its early stages, sequence assembly methods are, in theory, powerful and requires less computational power. Assuming the whole genome is assembled without using the reference genome (\textit{de novo} assembly), we can easily detect structural variation by comparing the individual's genome with the reference genome.
 
 \section{Data Preprocessing}
-We have the data showing the genome-wide segmental duplications (SD). The data consist of SD pairs with their exact locations. Furthermore, we have global alignments of SD pairs in a file generated using ClustalW \cite{thompson1994clustal}. Since entries in our data show the duplications in pairs, we had to identify SD groups in order to locate singly unique nucleotide positions. 
+We have the data showing the genome-wide segmental duplications (SD). The data consist of 51,599 SD pairs with their exact locations. Furthermore, we have global alignments of SD pairs in files generated using a sequence alignment tool called ClustalW \cite{thompson1994clustal}. Since entries in our data show the duplications in pairs, we had to turn these pairs into a multiple sequence alignment in order to locate singly unique nucleotide positions. However, our data lack some pairs. For example, we have SD pairs of A-B and B-C, therefore A-C should also be in our data whereas there is not in some cases. Using the algorithm \ref{missingPairs}, we have identified 21,023 new SD pairs using existing pairs and have them aligned.
 
 \begin{algorithm}
-\caption{Missing Pairs}\label{missingPairs}
+\caption{An algorithm to find missing SD pairs}
+\label{missingPairs}
 \begin{algorithmic}[1]
 \Procedure{Find\_Missing\_Pairs}{}
 \State $\textit{M} \gets \text{map of }\textit{Segmental Duplications}\text{ as read from data}$
 \For{$\text{each key-value pair in }\textit{M}$}
-\For{$\text{value}$}
-\State $\textit{temp\_set} \gets \text{M{[value]}}$
+\State {$\text{Let } \textit{temp\_set} \text{ be an empty set} $}
+\For{$\text{values in M{[key]}}$}
+\State $\textit{temp\_set} \gets \textit{temp\_set} \cup \text{M{[value]}}$
 \State $\text{clear M{[value]}}$
 \EndFor
 \While{true}
@@ -47,17 +49,31 @@ We have the data showing the genome-wide segmental duplications (SD). The data c
 \For{$\text{each key-value pair in }\textit{M}$}
 \State $\textit{Find intersection of }\textit{temp\_set}\text{ and }\textit{value}$
 \If{$\text{intersection is not empty}$}
+\State $\textit{temp\_set} \gets \textit{temp\_set} \cup \text{M{[value]}}$
 \State $\textit{flag} \gets \text{false}$
-\State $\textit{temp_set} \gets \textit{value}$
 \EndIf
 \EndFor
+\If{$ \textit{flag} \text{ is true} $}
+\State $\textbf{break}$
+\EndIf
 \EndWhile
 \EndFor
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-\section{Extracting Singly Unique Nucleotides}
-\subsection{Singly Unique Nucleotides (SUN)}
+\section{Singly Unique Nucleotides}
+Structural variation discovery has always been problematic since they tend to overlap with segmental duplications \cite{sudmant2010diversity}. Researchers were unable to discriminate slight differences in these regions which prevents copy number variation from being accurately predicted. In nearly identical regions, nucleotide difference information can be useful in discriminating segmental duplications from each other.
+Singly unique nucleotide (SUN) is a nucleotide difference between segmental duplications as shown red in figure \ref{singlyUniqueNucleotide}. A nucleotide difference is called a SUN if and only if they reside in one paralog. Otherwise, as shown blue in the figure, they are called  paralogous sequence variant (PSV). 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.4]{images/singlyUniqueNucleotide.png}
+    \caption{Singly unique nucleotide adopted from \cite{sudmant2010diversity}}
+    \label{singlyUniqueNucleotide}
+\end{figure}
+
+\subsection{Extracting Singly Unique Nucleotides}
+In order for paralogous sequences to be accurately identified, we need a database of SUN positions of all segmental duplications. Instead of aligning paralogs using a multiple sequence alignment tool, which requires quite some time and computational power, it could be done using pairwise alignments of paralogs which we have in our hand. Let $A$, $B$ and $C$ are three paralogs and  $S_{ab}$ denotes the singly unique nucleotides of $A$ relative to $B$. The singly unique nucleotides of A will be $S_{ab} \cap S_{ac}$. The same equation is valid for other paralogs respectively. Therefore, we could figure out all SUN positions as $(S_{ab} \cap S_{ac}) \cup (S_{ba} \cap S_{bc}) \cup (S_{ca} \cap S_{cb})$ 
+
 \section{Depth of Coverage}
 \subsection{GC Correction}
