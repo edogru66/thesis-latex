@@ -63,8 +63,9 @@ We have the data showing the genome-wide segmental duplications (SD). The data c
 \end{algorithm}
 
 \section{Singly Unique Nucleotides}
-Structural variation discovery has always been problematic since they tend to overlap with segmental duplications \cite{sudmant2010diversity}. Researchers were unable to discriminate slight differences in these regions which prevents copy number variation from being accurately predicted. In nearly identical regions, nucleotide difference information can be useful in discriminating segmental duplications from each other.
-Singly unique nucleotide (SUN) is a nucleotide difference between segmental duplications as shown red in figure \ref{singlyUniqueNucleotide}. A nucleotide difference is called a SUN if and only if they reside in one paralog. Otherwise, as shown blue in the figure, they are called  paralogous sequence variant (PSV). 
+Structural variation discovery has always been problematic since they tend to overlap with segmental duplications \cite{sudmant2010diversity}. Researchers that were unable to discriminate slight differences in these regions which prevents copy number variation from being accurately predicted have excluded these highly active regions from their studies. They have instead focused on unique regions of the genome.
+
+In nearly identical regions, nucleotide difference information can be useful in discriminating segmental duplications from each other. Singly unique nucleotide (SUN) is a nucleotide difference between segmental duplications as shown red in figure \ref{singlyUniqueNucleotide}. A nucleotide difference is called a SUN if and only if they reside in only one paralog. Otherwise, as shown blue in the figure, they are called  paralogous sequence variant (PSV). 
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/singlyUniqueNucleotide.png}
@@ -73,7 +74,72 @@ Singly unique nucleotide (SUN) is a nucleotide difference between segmental dupl
 \end{figure}
 
 \subsection{Extracting Singly Unique Nucleotides}
-In order for paralogous sequences to be accurately identified, we need a database of SUN positions of all segmental duplications. Instead of aligning paralogs using a multiple sequence alignment tool, which requires quite some time and computational power, it could be done using pairwise alignments of paralogs which we have in our hand. Let $A$, $B$ and $C$ are three paralogs and  $S_{ab}$ denotes the singly unique nucleotides of $A$ relative to $B$. The singly unique nucleotides of A will be $S_{ab} \cap S_{ac}$. The same equation is valid for other paralogs respectively. Therefore, we could figure out all SUN positions as $(S_{ab} \cap S_{ac}) \cup (S_{ba} \cap S_{bc}) \cup (S_{ca} \cap S_{cb})$ 
+In order for paralogous sequences to be accurately identified, we need a database of positions and letters of all SUNs that reside in a segmental duplication. Instead of aligning paralogs using a multiple sequence alignment tool, which requires quite some time and computational power, it could be done using pairwise alignments of paralogs which we have in our hand (figure \ref{alignmentFile}). Let $A$, $B$ and $C$ are three paralogs and  $S_{ab}$ denotes the singly unique nucleotides of $A$ relative to $B$. The singly unique nucleotides of A will be $S_{ab} \cap S_{ac}$. The same equation is valid for other paralogs respectively. Therefore, we could figure out all SUN positions as $(S_{ab} \cap S_{ac}) \cup (S_{ba} \cap S_{bc}) \cup (S_{ca} \cap S_{cb})$.
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.4]{images/alignmentFile.png}
+    \caption{A sample screenshot from an alignment file}
+    \label{alignmentFile}
+\end{figure}
+
+Algorithm \ref{getRelativeSun} uses an alignment file to find the pairwise SUN positions and letters. As shown in figure \ref{alignmentFile}, an alignment file contains the DNA sequences of two segments and an alignment results between them. The symbols $*$, $|$ and space denote a match, a mismatch and an indel respectively. It is important to state that, if there is a deletion in one sequence, every nucleotide position opposite of the deletion will be counted as a SUN. On the other hand, the deletion will be counted as one SUN. Another thing to pay attention is the strand of the sequences. Segmental duplications can be found in opposite strand of the DNA. In that case, the nucleotide in the alignment file will be replaced by its complement before getting saved to SUN database.
+
+\begin{algorithm}
+\caption{An algorithm to find pairwise SUN locations and letters}
+\label{getRelativeSun}
+\begin{algorithmic}[1]
+\Procedure{Get\_Relative\_SUN}{alignment\_file\_path, strand}
+\State $\text{Open alignment file}$
+\If{file is open}
+\State $\text{Let } S_{ab} \text{ and } S_{ba} \text{ empty sets}$
+\While{getline(file) $\neq$ EOF}
+\State{seq1 $\gets$ getline(file)}
+\State{aligment $\gets$ getline(file)}
+\State{seq2 $\gets$ getline(file)}
+\For{$ i\gets0 \text{ to size of } \textit{alignment}$}
+\If{$\textit{strand} \text{ is } -1$}
+\State{seq2[i] $\gets$ \textit{GET\_OPPOSITE\_PAIR}(seq2[i]) /* It} 
+\State{returns the complement of the input nucleotide, for example} 
+\State{if input is A, T is returned etc.*/}
+\EndIf
+\If{alignment[i] is `*'}
+\State{$S_{ab} \gets S_{ab} \cup seq1[i]$}
+\State{$S_{ba} \gets S_{ba} \cup seq2[i]$}
+\EndIf
+\If{alignment[i] is ` '}
+\If{seq1[i] is `-'}
+\State{$S_{ba} \gets S_{ba} \cup seq2[i]$}
+\EndIf
+\If{seq2[i] is `-'}
+\State{$S_{ab} \gets S_{ab} \cup seq1[i]$}
+\EndIf
+\EndIf
+\EndFor
+\EndWhile
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{An algorithm to find all SUN locations and letters}
+\label{allSun}
+\begin{algorithmic}[1]
+\Procedure{Get\_All\_SUN}{duplication\_file\_path}
+\State $\text{Open duplication file}$
+\If{file is open}
+\State {Let singly\_unique\_nucleotide\_map an empty map showing DNA }
+\State {sequence and SUN locations as key-value pair}
+\For{each entry in duplication file}
+\State{$\text{alignment\_file\_path} \gets \text{parsed from duplication file}$}
+\State{$\text{strand} \gets \text{parsed from duplication file}$}
+\State{$S_{ab}\text{, } S_{ba} \gets \textit{GET\_RELATIVE\_SUN}(\text{alignment\_file\_path, strand})$}
+\EndFor
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 \section{Depth of Coverage}
 \subsection{GC Correction}
