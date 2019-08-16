@@ -5,7 +5,7 @@ Structural variations are believed to be highly associated with diseases \cite{f
 
 Although some are originally designed for old sequencing technologies, high-throughput sequencing platforms have brought novel methods for structural variation discovery. 
 \subsection{Read Pair}
-Paired-end sequencing is a sequencing method where reads are generated from both sides of a DNA fragment whose distance known. The distance information will be used later by the aligner while aligning the paired-end reads to the reference genome. Read pair method utilizes the distance information between paired-end reads \cite{tuzun2005fine}. As shown in the Figure \ref{readpair}, paired-end reads that align too distant from each other indicates a deletion, those align too close to each other indicates an insertion.
+Paired-end sequencing is a sequencing method where reads are generated from both sides of a DNA fragment whose distance is known. The distance information will be used later by the aligner while aligning the paired-end reads to the reference genome. Read pair method utilizes the distance information between paired-end reads \cite{tuzun2005fine}. As shown in the Figure \ref{readpair}, paired-end reads that align too distant from each other indicates a deletion, those align too close to each other indicates an insertion.
 
 \begin{figure}[ht]
     \centering
@@ -195,7 +195,7 @@ As explained in section \ref{section:sun}, we have created a SUN database showin
 \end{algorithm}
 
 \subsection{GC Correction}
-The next generation sequencing platforms are known to be biased against regions that are rich or poor in terms of GC content \cite{smith2008rapid}. This has been a known issue of NGS platforms that lead to uneven or even no coverage of reads across the genome. Unless it was handled carefully, structural variation discovery methods that rely on coverage data would not be applicable. Fortunately, there are statistical methods out there to fix the uneven distribution of reads. We used multiplicative version of locally weighted scatter plot smooth \cite{cleveland1991computational}, LOWESS or LOESS in short, to smooth our GC content vs read depth curve. The method starts with computing the average read depth of non-overlapping sequence windows of size 1000. Then the sequence windows are binned according to their percentage of GC. There is 0.1\% difference between two consecutive bins. And again we compute the average read depth for each bin.
+The next generation sequencing platforms are known to be biased against regions that are rich or poor in terms of GC content \cite{smith2008rapid}. This has been a known issue of NGS platforms that lead to uneven or even no coverage of reads across the genome. Unless it was handled carefully, structural variation discovery methods that rely on coverage data would not be applicable. Fortunately, there are statistical methods out there to fix the uneven distribution of reads. We used multiplicative version of locally weighted scatter plot smooth \cite{cleveland1991computational}, LOWESS or LOESS in short, to smooth our GC content vs read depth curve. The method starts with computing the average read depth of non-overlapping sequence windows of size 1000. Then the sequence windows are binned according to their GC percentage. There is 0.1\% difference between two consecutive bins. And again we compute the average read depth for each bin.
 
 The figure \ref{gcCorrection} shows how the average read depth is impacted by GC content. The average read depth are getting lower with increasing GC content. We need to adjust the red line so that it comes closer to the green line. In multiplicative version of LOESS method, we define a correction factor, $k_{gc}$, which is equal to $$k_{gc} = \frac{\mu_{total}}{\mu_{gc}}$$ where $\mu_{total}$ is the average read depth of all sequence windows (i.e. green line) and $\mu_{gc}$ is the fit curve smoothed by LOESS (i.e. red line). Having computed $k_{gc}$ for all GC percentages, we simply multiply the average read depth with the respective $k_{gc}$.
 \begin{figure}[ht]
@@ -205,4 +205,31 @@ The figure \ref{gcCorrection} shows how the average read depth is impacted by GC
     \label{gcCorrection}
 \end{figure}
 
+\section{Paralog Gene Copy Number}
+
 \subsection{Gene Copy Number}
+Copy number variation is a structural variation that changes the amount of DNA. The simple yet powerful method for finding absolute copy number of a region is read depth. However, without multiple read mapping, applying read depth will give poor results.
+
+\begin{algorithm}
+\caption{An algorithm to find gene copy number}
+\label{findGeneCopyNumber}
+\begin{algorithmic}[1]
+\Procedure{Find\_Gene\_Copy\_Number}{gene\_file\_path, sun\_set}
+\State Let \textit{Genes} be a vector of genes as read from gene\_file\_path
+\For{each \textit{gene} in \textit{Genes}}
+\State Let \textit{temp} be empty vector
+\For{each SUN in sun\_set}
+\If{SUN is in \textit{gene}}
+\State Add read depth of SUN to \textit{temp}
+\EndIf
+\EndFor
+\If{\textit{temp} is not empty}
+\State {Compute mean and median of \textit{temp}}
+\EndIf
+\EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+In algorithm \ref{findGeneCopyNumber}, we try to find average gene copy numbers using only the depth information of SUNs residing in that gene. The procedure takes two parameters. One is the \textit{gene\_file\_path}, the file that contains gene location information of reference genome version GRCh37 (hg19). The other is \textit{sun\_set} produced by previous algorithms with read depth information.
+
