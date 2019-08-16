@@ -1,7 +1,7 @@
 \chapter{Methodology}
 In this chapter, each step that we followed in our method will be explained in detail.
 \section{Structural Variation Discovery with HTS Data}
-Structural variations are believed to be highly associated with diseases \cite{fanciulli2007fcgr3b,fellermann2006chromosome,aitman2006copy,gonzalez2005influence}. Therefore their discovery will be of critical importance in reducing the genetic disease susceptibility. Despite their significance in understanding disease susceptibility, there is no algorithm yet to find all types and sizes of structural variations at once. Before high-throughput sequencing technologies, microarrays were mainly used in structural variation discovery especially for copy number variation \cite{alkan2011genome}. As reviewed by Alkan et al., microarrays are no good at discovering balanced rearranagements and also are not able to locate the copy number variations \cite{alkan2011genome}. 
+Structural variations are believed to be highly associated with diseases \cite{fanciulli2007fcgr3b,fellermann2006chromosome,aitman2006copy,gonzalez2005influence}. Therefore their discovery will be of critical importance in reducing the genetic disease susceptibility. Despite their significance in understanding disease susceptibility, there is no algorithm yet to find all types and sizes of structural variations at once. Before high-throughput sequencing technologies, microarrays were mainly used in structural variation discovery especially for copy number variation \cite{alkan2011genome}. As reviewed by Alkan et al., microarrays are no good at discovering balanced rearrangements and also are not able to locate the copy number variations \cite{alkan2011genome}. 
 
 Although some are originally designed for old sequencing technologies, high-throughput sequencing platforms have brought novel methods for structural variation discovery. 
 \subsection{Read Pair}
@@ -62,7 +62,7 @@ We have the data showing the genome-wide segmental duplications (SD). The data c
 \end{algorithmic}
 \end{algorithm}
 
-\section{Singly Unique Nucleotides}
+\section{Singly Unique Nucleotides} \label{section:sun}
 Structural variation discovery has always been problematic since they tend to overlap with segmental duplications \cite{sudmant2010diversity}. Researchers that were unable to discriminate slight differences in these regions which prevents copy number variation from being accurately predicted have excluded these highly active regions from their studies. They have instead focused on unique regions of the genome.
 
 In nearly identical regions, nucleotide difference information can be useful in discriminating segmental duplications from each other. Singly unique nucleotide (SUN) is a nucleotide difference between segmental duplications as shown red in figure \ref{singlyUniqueNucleotide}. A nucleotide difference is called a SUN if and only if they reside in only one paralog. Otherwise, as shown blue in the figure, they are called  paralogous sequence variant (PSV). 
@@ -71,7 +71,7 @@ In nearly identical regions, nucleotide difference information can be useful in 
     \includegraphics[scale=0.4]{images/singlyUniqueNucleotide.png}
     \caption{Singly unique nucleotide adopted from \cite{sudmant2010diversity}}
     \label{singlyUniqueNucleotide}
-\end{figure}
+    \end{figure}
 
 \subsection{Extracting Singly Unique Nucleotides}
 In order for paralogous sequences to be accurately identified, we need a database of positions and letters of all SUNs that reside in a segmental duplication. Instead of aligning paralogs using a multiple sequence alignment tool, which requires quite some time and computational power, it could be done using pairwise alignments of paralogs which we have in our hand (figure \ref{alignmentFile}). Let $A$, $B$ and $C$ are three paralogs and  $S_{ab}$ denotes the singly unique nucleotides of $A$ relative to $B$. The singly unique nucleotides of A will be $S_{ab} \cap S_{ac}$. The same equation is valid for other paralogs respectively. Therefore, we could figure out all SUN positions as $(S_{ab} \cap S_{ac}) \cup (S_{ba} \cap S_{bc}) \cup (S_{ca} \cap S_{cb})$.
@@ -84,6 +84,10 @@ In order for paralogous sequences to be accurately identified, we need a databas
 \end{figure}
 
 Algorithm \ref{getRelativeSun} uses an alignment file to find the pairwise SUN positions and letters. As shown in figure \ref{alignmentFile}, an alignment file contains the DNA sequences of two segments and an alignment results between them. The symbols $*$, $|$ and space denote a match, a mismatch and an indel respectively. It is important to state that, if there is a deletion in one sequence, every nucleotide position opposite of the deletion will be counted as a SUN. On the other hand, the deletion will be counted as one SUN. Another thing to pay attention is the strand of the sequences. Segmental duplications can be found in opposite strand of the DNA. In that case, the nucleotide in the alignment file will be replaced by its complement before getting saved to SUN database.
+
+In algorithm \ref{allSun}, we use algorithm \ref{getRelativeSun} to create a SUN database of segmental duplications by intersecting relative SUN sets. First we find SUNs of A relative to B and SUNs of B relative to A. And then, if A or B come out for the first time, we save the relative SUNs directly to the \textit{sun\_map} since there is no set of SUNs yet to intersect. On the other hand, if A or B is found in \textit{sun\_map}, we intersect the old set of SUNs with the relative SUNs. We store the database in a map where its keys are segmental duplications and its values are SUN locations and letters.
+
+As a result, we have found 15,352,106 unique SUN locations together with their bases on a positive strand of the DNA. 
 
 \begin{algorithm}
 \caption{An algorithm to find pairwise SUN locations and letters}
@@ -130,16 +134,75 @@ Algorithm \ref{getRelativeSun} uses an alignment file to find the pairwise SUN p
 \Procedure{Get\_All\_SUN}{duplication\_file\_path}
 \State $\text{Open duplication file}$
 \If{file is open}
-\State {Let singly\_unique\_nucleotide\_map an empty map showing DNA }
-\State {sequence and SUN locations as key-value pair}
+\State {Let \textit{sun\_map} an empty map showing segmental duplication and }
+\State {its SUN locations as key-value pair}
 \For{each entry in duplication file}
+\State{Let A, B segmental duplications as parsed from duplication file}
 \State{$\text{alignment\_file\_path} \gets \text{parsed from duplication file}$}
 \State{$\text{strand} \gets \text{parsed from duplication file}$}
 \State{$S_{ab}\text{, } S_{ba} \gets \textit{GET\_RELATIVE\_SUN}(\text{alignment\_file\_path, strand})$}
+\If{A exists in sun\_map}
+\State{$\text{sun\_map[A]} \gets \text{sun\_map[A]} \cap S_{ab}$}
+\Else
+\State{$\text{sun\_map[A]} \gets S_{ab}$}
+\EndIf
+\If{B exists in sun\_map}
+\State{$\text{sun\_map[B]} \gets \text{sun\_map[B]} \cap S_{ba}$}
+\Else
+\State{$\text{sun\_map[B]} \gets S_{ba}$}
+\EndIf
 \EndFor
 \EndIf
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-\section{Depth of Coverage}
+\section{Depth of Singly Unique Nucleotides}
+The depth or coverage, a term that entered the literature thanks to the next generation sequencing, is defined as the number of `reads' that include a particular nucleotide. In next generation sequencing, the DNA is separated into little and overlapping portions, called `reads', to be assembled later. When the reads are aligned with respect to their mapping locations, nucleotides are sequenced in varying numbers as shown in figure \ref{depthOfCoverage}. Therefore the number the nucleotide gets sequenced is called the depth of that position.
+
+As explained in section \ref{section:sun}, we have created a SUN database showing all the SUN locations. In algorithm \ref{findDepth}, we basically compute the depth of SUN locations if base in `read' matches with the base of SUN. In order to use this function, we need a BAM file as a parameter. BAM \cite{li2009sequence} is a file type for storing sequence alignment data in binary format. For each alignment it contains read name, read sequence, read quality, alignment information, and custom tags. We used HTSLib \cite{htslib}, a C library for reading/writing high-throughput sequencing data, to efficiently read a BAM file.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.4]{images/depthofcoverage.png}
+    \caption{Depth}
+    \label{depthOfCoverage}
+\end{figure}
+\begin{algorithm}
+\caption{An algorithm to find depth of SUN locations}
+\label{findDepth}
+\begin{algorithmic}[1]
+\Procedure{Find\_Depth}{bam\_file, sun\_set}
+\State $\text{Open bam\_file}$
+\If{file is open}
+\For{every read in bam\_file}
+\State $\text{chr} \gets \text{parsed from bam\_file}$
+\State $\text{pos} \gets \text{parsed from bam\_file}$
+\State $\text{len} \gets \text{parsed from bam\_file}$
+\State $\text{seq[len]} \gets \textit{CONVERT\_ID\_TO\_NUCLEOTIDE}$ // In a bam file, 
+\State each base is encoded in 4 bits: 0001: A, 0010: C, 0100: G, 
+\State 1000: T, 1111: N. This procedure converts the binary-coded 
+\State nucleotide to its letter representation.
+\For{each SUN falling into the `reads' range}
+\If{seq[SUN\_index] is equal to SUN nucleotide}
+\State Increment depth of SUN by 1
+\Else
+\State Remove from sun\_set
+\EndIf
+\EndFor
+\EndFor
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{GC Correction}
+The next generation sequencing platforms are known to be biased against regions that are rich or poor in terms of GC content \cite{smith2008rapid}. This has been a known issue of NGS platforms that lead to uneven or even no coverage of reads across the genome. Unless it was handled carefully, structural variation discovery methods that rely on coverage data would not be applicable. Fortunately, there are statistical methods out there to fix the uneven distribution of reads. We used multiplicative version of locally weighted scatter plot smooth \cite{cleveland1991computational}, LOWESS or LOESS in short, to smooth our GC content vs read depth curve. The method starts with computing the average read depth of non-overlapping sequence windows of size 1000. Then the sequence windows are binned according to their percentage of GC. There is 0.1\% difference between two consecutive bins. And again we compute the average read depth for each bin.
+
+The figure \ref{gcCorrection} shows how the average read depth is impacted by GC content. The average read depth are getting lower with increasing GC content. We need to adjust the red line so that it comes closer to the green line. In multiplicative version of LOESS method, we define a correction factor, $k_{gc}$, which is equal to $$k_{gc} = \frac{\mu_{total}}{\mu_{gc}}$$ where $\mu_{total}$ is the average read depth of all sequence windows (i.e. green line) and $\mu_{gc}$ is the fit curve smoothed by LOESS (i.e. red line). Having computed $k_{gc}$ for all GC percentages, we simply multiply the average read depth with the respective $k_{gc}$.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.25]{images/gcCorrection.png}
+    \caption{NA12878 gc correction}
+    \label{gcCorrection}
+\end{figure}
+
+\subsection{Gene Copy Number}
