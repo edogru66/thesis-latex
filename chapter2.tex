@@ -10,24 +10,45 @@ Paired-end sequencing is a sequencing method where reads are generated from both
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/readpair.png}
-    \caption{(adapted from \cite{tuzun2005fine})}
+    \caption{Paired-end reads that are mapped too distant from each other indicates deletion, too close to each other indicates insertion and ahead of what should be behind indicates inversion (adopted from \cite{tuzun2005fine})}
     \label{readpair}
 \end{figure}
+
+Structural variation discovery tools based on read-pair can be categorized as follows:
+\begin{itemize}
+    \item Unique Mapping: PEMer \cite{korbel2009pemer}, BreakDancer \cite{chen2009breakdancer}, GenomeSTRIP \cite{handsaker2015large}, 
+    \item Multiple Mapping: VariationHunter \cite{hormozdiari2009combinatorial}, CommonLAW \cite{hormozdiari2011simultaneous}, MoDIL \cite{lee2009modil}, MoGUL \cite{lee2010mogul}, HYDRA \cite{quinlan2010genome}
+\end{itemize}
 \subsection{Read Depth}
-Read depth is a simple method to detect duplications and deletions at a higher resolution. Based on the assumption that regions are randomly sequenced, for reads that are mapped to all possible locations of the reference genome, the depth of duplicated regions will be higher and the depth of deleted regions will be lower than average \cite{bailey2002recent} as shown in Figure \ref{readdepth}. Multiple read-mapping is an important aspect of read depth to work effectively. Otherwise the difference of depth between duplicated regions and deleted regions will be insignificant. However known sequencing bias against GC-rich and GC-poor regions \cite{smith2008rapid} should be handled carefully.
+Read depth is a simple method to detect duplications and deletions at a higher resolution. Based on the assumption that regions are randomly sequenced, for reads that are mapped to the reference genome, the depth of duplicated regions will be higher and the depth of deleted regions will be lower than average \cite{bailey2002recent} as shown in Figure \ref{readdepth}. Multiple read-mapping is an important aspect of read depth to work effectively. Otherwise the difference of depth between duplicated regions and deleted regions will be insignificant. However known sequencing bias against GC-rich and GC-poor regions \cite{smith2008rapid} should be handled carefully.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/placeholder.jpg}
-    \caption{Read depth figure will be added}
+    \caption{The depth of regions that are duplicated will be higher and the depth of regions that are deleted will be lower than expected depth}
     \label{readdepth}
 \end{figure}
+
+Structural variation discovery tools based on read depth can be categorized as follows:
+\begin{itemize}
+    \item Unique Mapping: CNVnator \cite{abyzov2011cnvnator}, Event-Wise Testing \cite{yoon2009sensitive}
+    \item Multiple Mapping: Whole Genome Shotgun Sequence \cite{bailey2002recent}, mrCaNaVar \cite{alkan2009personalized}
+\end{itemize}
 
 \subsection{Split Read}
 Originally designed for longer reads (Sanger sequence etc.), split read based methods were capable of structural variation discovery at one base pair resolution by trying to map the reads by splitting. Similar to read pair, the location of split reads will tell the class of structural variation. For instance, the distance between split reads shows an insertion or first split coming after second split indicates an inversion.
 
-\subsection{Sequence Assembly}
-Although it is in its early stages, sequence assembly methods are, in theory, powerful and requires less computational power. Assuming the whole genome is assembled without using the reference genome (\textit{de novo} assembly), we can easily detect structural variation by comparing the individual's genome with the reference genome.
+Structural variation discovery methods based on split read can be categorized as follows:
+\begin{itemize}
+    \item Unique Mapping: Pindel \cite{ye2009pindel}, SRiC \cite{zhang2011identification}
+    \item Multiple Mapping: Splitread \cite{karakoc2012detection}
+\end{itemize}
+
+\subsection{Sequence Assembly} 
+Although it is in its early stages, sequence assembly methods are, in theory, powerful and requires less computational power. Assuming the whole genome is assembled without using the reference genome (\textit{de novo} assembly), we can easily detect structural variation by comparing the individual's genome with the reference genome. NovelSeq \cite{hajirasouliha2010detection}, PopIns \cite{kehr2015popins} can be examples of this type.
+
+\subsection{Hybrid Methods}
+There are also some methods using two or more of these techniques in order to increase their accuracy. Examples of these type of methods can be DELLY \cite{rausch2012delly} in which read pair and split read were used, LUMPY \cite{layer2014lumpy} in which read pair, read depth and split read were used, TARDIS \cite{soylev2017toolkit} in which read pair, read depth and split read were used. 
 
 \section{Data Preprocessing}
 We have the data showing the genome-wide segmental duplications (SD). The data consist of 51,599 SD pairs with their exact locations. Furthermore, we have global alignments of SD pairs in files generated using a sequence alignment tool called ClustalW \cite{thompson1994clustal}. Since entries in our data show the duplications in pairs, we had to turn these pairs into a multiple sequence alignment in order to locate singly unique nucleotide positions. However, our data lack some pairs. For example, we have SD pairs of A-B and B-C, therefore A-C should also be in our data whereas there is not in some cases. Using the algorithm \ref{missingPairs}, we have identified 21,023 new SD pairs using existing pairs and have them aligned.
@@ -69,7 +90,7 @@ In nearly identical regions, nucleotide difference information can be useful in 
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/singlyUniqueNucleotide.png}
-    \caption{Singly unique nucleotide adopted from \cite{sudmant2010diversity}}
+    \caption{Singly unique nucleotides are single nucleotide differences among segmental duplications. If there are more than one paralog that contains a nucleotide difference, it will be called a paralog specific variant (adopted from \cite{sudmant2010diversity})}
     \label{singlyUniqueNucleotide}
     \end{figure}
 
@@ -163,7 +184,7 @@ As explained in section \ref{section:sun}, we have created a SUN database showin
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/depthofcoverage.png}
-    \caption{Depth}
+    \caption{}
     \label{depthOfCoverage}
 \end{figure}
 \begin{algorithm}
@@ -195,20 +216,17 @@ As explained in section \ref{section:sun}, we have created a SUN database showin
 \end{algorithm}
 
 \subsection{GC Correction}
-The next generation sequencing platforms are known to be biased against regions that are rich or poor in terms of GC content \cite{smith2008rapid}. This has been a known issue of NGS platforms that lead to uneven or even no coverage of reads across the genome. Unless it was handled carefully, structural variation discovery methods that rely on coverage data would not be applicable. Fortunately, there are statistical methods out there to fix the uneven distribution of reads. We used multiplicative version of locally weighted scatter plot smooth \cite{cleveland1991computational}, LOWESS or LOESS in short, to smooth our GC content vs read depth curve. The method starts with computing the average read depth of non-overlapping sequence windows of size 1000. Then the sequence windows are binned according to their GC percentage. There is 0.1\% difference between two consecutive bins. And again we compute the average read depth for each bin.
-
-The figure \ref{gcCorrection} shows how the average read depth is impacted by GC content. The average read depth are getting lower with increasing GC content. We need to adjust the red line so that it comes closer to the green line. In multiplicative version of LOESS method, we define a correction factor, $k_{gc}$, which is equal to $$k_{gc} = \frac{\mu_{total}}{\mu_{gc}}$$ where $\mu_{total}$ is the average read depth of all sequence windows (i.e. green line) and $\mu_{gc}$ is the fit curve smoothed by LOESS (i.e. red line). Having computed $k_{gc}$ for all GC percentages, we simply multiply the average read depth with the respective $k_{gc}$.
+The next generation sequencing platforms are known to be biased against regions that are rich or poor in terms of GC content \cite{smith2008rapid}. This has been a known issue of NGS platforms that lead to uneven or even no coverage of reads across the genome. Unless it was handled carefully, structural variation discovery methods that rely on coverage data would not be applicable. Fortunately, there are statistical methods out there to fix the uneven distribution of reads. We used multiplicative version of locally weighted scatter plot smooth \cite{cleveland1991computational}, LOWESS or LOESS in short, to smooth our GC content vs read depth curve. The method starts with computing the average read depth of non-overlapping sequence windows of size 1 kilobase. Then the sequence windows are binned according to their GC percentage. There is 0.1\% difference between two consecutive bins. And again we compute the average read depth for each bin.
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.25]{images/gcCorrection.png}
     \caption{NA12878 gc correction}
     \label{gcCorrection}
 \end{figure}
+The figure \ref{gcCorrection} shows how the average read depth is impacted by GC content. The average read depth are getting lower with increasing GC content. We need to adjust the red line so that it comes closer to the green line. In multiplicative version of LOESS method, we define a correction factor, $k_{gc}$, which is equal to $$k_{gc} = \frac{\mu_{total}}{\mu_{gc}}$$ where $\mu_{total}$ is the average read depth of all sequence windows (i.e. green line) and $\mu_{gc}$ is the fit curve smoothed by LOESS (i.e. red line). Having computed $k_{gc}$ for all GC percentages and known the old value for read depth $d$,  new value for read depth, $d^\prime$, is calculated as; $$d^\prime = d*k_{gc}$$.
 
-\section{Paralog Gene Copy Number}
-
-\subsection{Gene Copy Number}
-Copy number variation is a structural variation that changes the amount of DNA. The simple yet powerful method for finding absolute copy number of a region is read depth. However, without multiple read mapping, applying read depth will give poor results.
+\section{Gene Copy Number}
+Copy number variation is a structural variation that changes the amount of DNA. The simple yet powerful method for finding absolute copy number of a region is read depth. However, without multiple read mapping, applying read depth will give poor results. What we compute here is a copy number that will be useful later while computing the paralog specific copy number.
 
 \begin{algorithm}
 \caption{An algorithm to find gene copy number}
@@ -233,3 +251,31 @@ Copy number variation is a structural variation that changes the amount of DNA. 
 
 In algorithm \ref{findGeneCopyNumber}, we try to find average gene copy numbers using only the depth information of SUNs residing in that gene. The procedure takes two parameters. One is the \textit{gene\_file\_path}, the file that contains gene location information of reference genome version GRCh37 (hg19). The other is \textit{sun\_set} produced by previous algorithms with read depth information.
 
+As a result of the algorithm \ref{findGeneCopyNumber}, we found 4279 genes that has a SUN on them and therefore an average copy number can be calculated for them. These genes are residing in a segmental duplication which makes them paralog genes.
+
+\section{Paralog Gene Copy Number}
+Paralog genes are genes that are related as a result of duplication \cite{Moreira2011}. Unlike orthologs, paralog genes do not have to have the same functionality, however, it can be related since they are coming from a common ancestor. Paralog genes are important factors of genomic evolution \cite{koonin2005orthologs}. 
+
+\subsection{Paralog Specific Copy Number}
+Paralog genes show more variation in copy number than those that are non-paralog since they exist in duplicated regions. We determine paralog genes according to whether they reside in a segmental duplications or not. If a gene is in a segmental duplication, it means it has a paralog on other duplications.
+
+\begin{algorithm}
+\caption{An algorithm to find paralog specific copy number}
+\label{findParalogCopyNumber}
+\begin{algorithmic}[1]
+\Procedure{Find\_Paralog\_Specific\_Copy\_Number}{gene\_file\_path, segmental\_duplication\_file\_path}
+\State SegmentalDuplications $\gets$ parsed from segmental\_duplication\_file\_path
+\State Genes $\gets$ parsed from gene\_file\_path
+\For{each segDup in \textit{SegmentalDuplications}}
+\State totalCNV $\gets 0$
+\For{each gene in \textit{Genes}}
+\If{gene is on segDup}
+\State $totalCNV \gets totalCNV + gene.getCNV()$
+\EndIf
+\EndFor
+\EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+In algorithm \ref{findParalogCopyNumber}, we try to compute paralog specific copy number of paralog genes. Since we use a sequence alignment file in which the reads were mapped to a single location by the aligner, the average copy number of genes are expected to be lower. Therefore we sum the average copy numbers of genes that are on the same segmental duplication (i.e. paralog). The result will be the absolute copy number of those genes.
