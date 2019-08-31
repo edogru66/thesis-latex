@@ -1,4 +1,12 @@
 \chapter{Conclusion and Discussion}
-\section{Future Work}
+In this thesis, we present a method to discover structural variations in regions that are rich in terms of duplication. Duplication-rich regions are mostly abandoned from 
+structural variation discovery because of its complex nature. mrCaNaVaR was the first tool to address these problems, however it uses a sequence alignment file where reads are mapped to multiple locations. 
+
+In our method, we utilized the singly unique nucleotides in order to differentiate the paralogs from each other. Our method was based on read depth and suffered from GC bias. We solved the problem using multiplicative version of LOESS method. We computed the average copy numbers of genes using read depth of singly unique nucleotides on that gene. And finally we sum the average copy numbers of genes residing in the same segmental duplication to find paralog specific copy number of genes.
+
+The lack of validated results makes it difficult for us to check our results. Instead of validated results, we compared our results with the results of other methods.s
+
+\section{Future Directions}
 
 -organisms other than human.
+-Different types of SV

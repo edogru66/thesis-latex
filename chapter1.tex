@@ -50,6 +50,23 @@ Copy number variation, also known as unbalanced rearrangement, is a structural v
   \item Segmental Duplications: They are segments in the DNA that are 90\% or more identical. It can be intra-chromosomal as well as inter-chromosomal. Although segmental duplications account for $\sim$5\% percent of the genome, they are significant because (1) they often exist in gene-rich chromosomes \cite{bailey2002recent} and (2) they are the most active regions in human genome triggering instabilities and new variations in the chromosome \cite{samonte2002segmental,sudmant2010diversity}.
 \end{itemize}
 \subsubsection{Balanced Rearrangements}
+Balanced rearrangements are structural variations that do not change the amount of DNA. Balanced rearrangements can be categorized into two;
+
+\begin{itemize}
+    \item Inversions: They are rearrangements where a segment of the DNA is simply inverted.
+    \item Translocations: They are rearrangements where two segments of the DNA exchange their locations. 
+\end{itemize}
+
+\subsection{Chromosomal Changes}
+Chromosomal changes are variations in the number of chromosome-pairs. They are such major variations that they can be detected by a microscope. It can be categorized into three:
+
+\begin{itemize}
+    \item Monosomy: It is a chromosomal change where there is only one copy of a chromosome.
+    \item Trisomy: It is a chromosomal change where there is an extra copy of a chromosome.
+    \item Uniparental Disomy: It is a chromosomal change where both pair of chromosome come from the same parent.
+\end{itemize}
 
 \section{Our Contribution}
-\newpage
+In this thesis, we present a method to discover structural variations in duplicated regions. This remains an open problem until mrCaNaVaR \cite{alkan2009personalized} came out, due to the difficult nature of duplicated regions in genome. However, mrCaNaVaR requires a multiple read mapping sequence alignment file, which is not as widespread as unique read mapping. Our method compute the absolute copy numbers of genes residing in segmental duplications using a unique mapping sequence alignment file. 
+
+The organization of the thesis is as follows: We briefly introduced the problem in Chapter 1. We further explain the problem and present our method in Chapter 2. We show the experimental results in Chapter 3. We conclude the thesis with final remarks in Chapter 4. 
