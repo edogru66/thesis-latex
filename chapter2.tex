@@ -20,11 +20,11 @@ Structural variation discovery tools based on read-pair can be categorized as fo
     \item Multiple Mapping: VariationHunter \cite{hormozdiari2009combinatorial}, CommonLAW \cite{hormozdiari2011simultaneous}, MoDIL \cite{lee2009modil}, MoGUL \cite{lee2010mogul}, HYDRA \cite{quinlan2010genome}
 \end{itemize}
 \subsection{Read Depth}
-Read depth is a simple method to detect duplications and deletions at a higher resolution. Based on the assumption that regions are randomly sequenced, for reads that are mapped to the reference genome, the depth of duplicated regions will be higher and the depth of deleted regions will be lower than average \cite{bailey2002recent} as shown in Figure \ref{readdepth}. Multiple read-mapping is an important aspect of read depth to work effectively. Otherwise the difference of depth between duplicated regions and deleted regions will be insignificant. However known sequencing bias against GC-rich and GC-poor regions \cite{smith2008rapid} should be handled carefully.
+Read depth is a simple method to detect duplications and deletions. Based on the assumption that regions are randomly sequenced, for reads that are mapped to the reference genome, the depth of duplicated regions will be higher and the depth of deleted regions will be lower than average \cite{bailey2002recent} as shown in Figure \ref{readdepth}. Multiple read-mapping is an important aspect of read depth to work effectively. Otherwise the difference of depth between duplicated regions and deleted regions will be insignificant. However known sequencing bias against GC-rich and GC-poor regions \cite{smith2008rapid} should be handled carefully.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.4]{images/placeholder.jpg}
+    \includegraphics[scale=0.7]{images/readdepth.png}
     \caption{The depth of regions that are duplicated will be higher and the depth of regions that are deleted will be lower than expected depth}
     \label{readdepth}
 \end{figure}
@@ -92,7 +92,7 @@ In nearly identical regions, nucleotide difference information can be useful in 
     \includegraphics[scale=0.4]{images/singlyUniqueNucleotide.png}
     \caption{Singly unique nucleotides are single nucleotide differences among segmental duplications. If there are more than one paralog that contains a nucleotide difference, it will be called a paralog specific variant (adopted from \cite{sudmant2010diversity})}
     \label{singlyUniqueNucleotide}
-    \end{figure}
+\end{figure}
 
 \subsection{Extracting Singly Unique Nucleotides}
 In order for paralogous sequences to be accurately identified, we need a database of positions and letters of all SUNs that reside in a segmental duplication. Instead of aligning paralogs using a multiple sequence alignment tool, which requires quite some time and computational power, it could be done using pairwise alignments of paralogs which we have in our hand (figure \ref{alignmentFile}). Let $A$, $B$ and $C$ are three paralogs and  $S_{ab}$ denotes the singly unique nucleotides of $A$ relative to $B$. The singly unique nucleotides of A will be $S_{ab} \cap S_{ac}$. The same equation is valid for other paralogs respectively. Therefore, we could figure out all SUN positions as $(S_{ab} \cap S_{ac}) \cup (S_{ba} \cap S_{bc}) \cup (S_{ca} \cap S_{cb})$.
@@ -184,7 +184,7 @@ As explained in section \ref{section:sun}, we have created a SUN database showin
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/depthofcoverage.png}
-    \caption{}
+    \caption{Sequencing coverage (depth)}
     \label{depthOfCoverage}
 \end{figure}
 \begin{algorithm}
@@ -220,7 +220,7 @@ The next generation sequencing platforms are known to be biased against regions 
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.25]{images/gcCorrection.png}
-    \caption{NA12878 gc correction}
+    \caption{The average depth of 1 kb windows with respect to their GC content for NA12878}
     \label{gcCorrection}
 \end{figure}
 The figure \ref{gcCorrection} shows how the average read depth is impacted by GC content. The average read depth are getting lower with increasing GC content. We need to adjust the red line so that it comes closer to the green line. In multiplicative version of LOESS method, we define a correction factor, $k_{gc}$, which is equal to $$k_{gc} = \frac{\mu_{total}}{\mu_{gc}}$$ where $\mu_{total}$ is the average read depth of all sequence windows (i.e. green line) and $\mu_{gc}$ is the fit curve smoothed by LOESS (i.e. red line). Having computed $k_{gc}$ for all GC percentages and known the old value for read depth $d$,  new value for read depth, $d^\prime$, is calculated as; $$d^\prime = d*k_{gc}$$.
