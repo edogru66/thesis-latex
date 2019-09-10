@@ -27,10 +27,10 @@
 
 
 \keywords{Structural Variation, Segmental Duplication, Copy Number Variation, Singly Unique Nucleotide}
-\anahtarsoz{Anahtar S{\"o}zlerim}
+\anahtarsoz{Yap{\i}sal Varyasyon, Segmental Duplikasyon, Kopya Say{\i}s{\i} Varyasyonu, Tekli \"{O}zel N\"{u}kleotid}
 
-\title{STRUCTURAL VARIATION DISCOVERY IN REPEAT- AND DUPLICATION-RICH REGIONS}
-\baslik{TEKRARLI VE DUPL{\.I}KASYON BAKIMINDAN ZENG{\.I}N B{\"O}LGELERDE YAPISAL VARYASYON KE\c{S}F{\.I}} 
+\title{PARALOG-SPECIFIC GENE COPY NUMBER DISCOVERY WITHIN SEGMENTAL DUPLICATIONS}
+\baslik{SEGMENTAL DUPL\.{I}KASYONLARDA PARALOG-\"{O}ZG\"{U} KOPYA SAYISI VARYASYONU KE\c{S}F\.{I}} 
 
 \author{Emre Dogru}
 \dept{Computer Engineering}
@@ -39,8 +39,8 @@
 \tezyoneticisi{Can Alkan}
 %\coadvisor{No academic titles, only the name XX} % uncomment this line if there is a co-advisor
 %\ikincitezyoneticisi{Akademik \" Unvans\i z isim XX} % uncomment this line if there is a co-advisor
-\firstreader{A. Ercument Cicek}
-\secondreader{Oznur Tastan}
+\firstreader{A. Ercument Çiçek}
+\secondreader{Tunca Do\u{g}an}
 \thirdreader{No academic titles, only the name U}
 \fourthreader{No academic titles, only the name V}
 \director{Ezhan Kara\c san}
@@ -66,12 +66,19 @@ In this study, our aim is to discover structural variations in repeat- or duplic
 \end{abstract}
 
 \begin{ozet}
- T\"urk\c ce \"ozet buraya gelecek. 
+Genom dizileme ve analizinde geli\c{s}en teknolojiyle birlikte, insan genomundaki de\u{g}i\c{s}imlerin ana kayna\u{g}inin yap{\i}sal varyasyonlar oldu\u{g}u belirginle\c{s}ti. \c{C}e\c{s}itli hastal{\i}klara yol a\c{c}mas{\i} bak{\i}m{\i}ndan \"{o}nemli olmalar{\i}na ra\u{g}men, halen b\"{u}t\"{u}n tip ve uzunluktaki yap{\i}sal varyasyonlar{\i} bulan bir algoritma bulunmamaktad{\i}r. Yap{\i}sal varyasyon ke\c{s}fi problemli bir alan olarak kalm{\i}\c{s}t{\i}r \c{c}\"{u}nk\"{u} s{\i}kl{\i}kla segmental duplikasyonlar{\i}n, DNA \"{u}zerinde birden fazla bulunan y\"{u}ksek oranda benzerlik g\"{o}steren segmentler, \"{u}zerinde bulunmaktad{\i}r. Ara\c{s}t{\i}rmac{\i}lar b\"{u}t\"{u}n genomun $\sim$\%5'ine kar\c{s}{\i}l{\i}k gelen bu b\"{o}lgeleri ara\c{s}t{\i}rmalarda karma\c{s}{\i}kl{\i}k getirece\u{g}i i\c{c}in kapsam d{\i}\c{s}{\i}nda b{\i}rakm{\i}\c{s}t{\i}r. Sadece biraz{\i} bu alanlarda \c{c}al{\i}\c{s}ma yapm{\i}\c{s}t{\i}r, ancak onlar da okumalar{\i}n birden fazla lokasyonla e\c{s}le\c{s}tirildi\u{g}i \"{o}zel bir dizi hizalama dosyas{\i} kullanm{\i}\c{s}t{\i}r.
+
+Bu \c{c}al{\i}\c{s}mada bizim amac{\i}m{\i}z okumalar{\i}n tek bir lokasyonla e\c{s}le\c{s}tirildi\u{g}i dizi hizalama dosyas{\i} kullanarak tekrarl{\i} ve duplikasyon bak{\i}m{\i}ndan zengin b\"{o}lgelerde yap{\i}sal varyasyon ke\c{s}fi yapmakt{\i}r. Tekrarl{\i} b\"{o}lgelerdeki paraloglar{\i} birbirinden ay{\i}ran tekli \"{o}zel n\"{u}kleotidleri (SUN) kullan{\i}yoruz. Metodumuz okuma derinli\u{g}ine dayanmaktad{\i}r ve sadece duplikasyon ve silme i\c{s}lemlerini tespit etmekle s{\i}n{\i}rl{\i}d{\i}r. Genlerin mutlak kopya say{\i}lar{\i}n{\i} sadece SUN okuma derinli\u{g}ini kullanarak hesaplad{\i}k. Ayr{\i}ca, ayn{\i} segmental kopyada bulunan genler i\c{c}in paraloga \"{o}zg\"{u} mutlak kopya numaralar{\i}n{\i} da hesaplad{\i}k.
 \end{ozet}
 
-\begin{ack}
- I acknowledge that \ldots
-\end{ack}
+\clearpage
+\begin{center}
+    \thispagestyle{empty}
+    \vspace*{\fill}
+    \textit{To my family and my dearest friends...}
+    \vspace*{\fill}
+\end{center}
+\clearpage
 
 \tableofcontents
 \listoffigures
