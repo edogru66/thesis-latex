@@ -39,7 +39,7 @@
 \tezyoneticisi{Can Alkan}
 %\coadvisor{No academic titles, only the name XX} % uncomment this line if there is a co-advisor
 %\ikincitezyoneticisi{Akademik \" Unvans\i z isim XX} % uncomment this line if there is a co-advisor
-\firstreader{A. Ercument Çiçek}
+\firstreader{A. Erc\"{u}ment Çiçek}
 \secondreader{Tunca Do\u{g}an}
 \thirdreader{No academic titles, only the name U}
 \fourthreader{No academic titles, only the name V}
@@ -60,7 +60,7 @@
 \begin{abstract}
 With the advancing technology in genome sequencing and analysis, it has become evident that the structural variations are the main source of alteration in human genome. Despite their significance in understanding disease susceptibility, there is no algorithm yet to find all types and sizes of structural variations at once. Structural variation discovery remained problematic since they often overlap with the segmental duplications, nearly identical segments of DNA that appear more than once in the genome. Researchers often excluded these regions that made up $\sim$5\% of the genome because of the complexity it brings to their studies. Only few of them are working in these regions, however, they require a special sequence alignment file where reads are mapped to multiple locations.
 
-In this study, our aim is to discover structural variations in repeat- or duplication-rich regions using a sequence alignment file with unique mapping. We utilize the singly unique nucleotides (SUN) that distinguish paralogs from each other in the sequence alignment of the duplicated regions. Our method is based on read depth and is limited to detect only duplications and deletions. We computed the absolute copy numbers of genes using only read depth of SUN. Furthermore, we also computed the paralog specific absolute copy numbers for genes residing in the same segmental duplication.
+In this study, our aim is to discover paralog specific gene copy number within segmental duplications using a sequence alignment file with unique mapping. We utilize the singly unique nucleotides (SUN) that distinguish paralogs from each other in the sequence alignment of the duplicated regions. Our method is based on read depth and is limited to detect only duplications and deletions. We computed the absolute copy numbers of genes using only read depth of SUN. Furthermore, we also computed the paralog specific absolute copy numbers for genes residing in the same segmental duplication.
 
 
 \end{abstract}
@@ -68,7 +68,7 @@ In this study, our aim is to discover structural variations in repeat- or duplic
 \begin{ozet}
 Genom dizileme ve analizinde geli\c{s}en teknolojiyle birlikte, insan genomundaki de\u{g}i\c{s}imlerin ana kayna\u{g}inin yap{\i}sal varyasyonlar oldu\u{g}u belirginle\c{s}ti. \c{C}e\c{s}itli hastal{\i}klara yol a\c{c}mas{\i} bak{\i}m{\i}ndan \"{o}nemli olmalar{\i}na ra\u{g}men, halen b\"{u}t\"{u}n tip ve uzunluktaki yap{\i}sal varyasyonlar{\i} bulan bir algoritma bulunmamaktad{\i}r. Yap{\i}sal varyasyon ke\c{s}fi problemli bir alan olarak kalm{\i}\c{s}t{\i}r \c{c}\"{u}nk\"{u} s{\i}kl{\i}kla segmental duplikasyonlar{\i}n, DNA \"{u}zerinde birden fazla bulunan y\"{u}ksek oranda benzerlik g\"{o}steren segmentler, \"{u}zerinde bulunmaktad{\i}r. Ara\c{s}t{\i}rmac{\i}lar b\"{u}t\"{u}n genomun $\sim$\%5'ine kar\c{s}{\i}l{\i}k gelen bu b\"{o}lgeleri ara\c{s}t{\i}rmalarda karma\c{s}{\i}kl{\i}k getirece\u{g}i i\c{c}in kapsam d{\i}\c{s}{\i}nda b{\i}rakm{\i}\c{s}t{\i}r. Sadece biraz{\i} bu alanlarda \c{c}al{\i}\c{s}ma yapm{\i}\c{s}t{\i}r, ancak onlar da okumalar{\i}n birden fazla lokasyonla e\c{s}le\c{s}tirildi\u{g}i \"{o}zel bir dizi hizalama dosyas{\i} kullanm{\i}\c{s}t{\i}r.
 
-Bu \c{c}al{\i}\c{s}mada bizim amac{\i}m{\i}z okumalar{\i}n tek bir lokasyonla e\c{s}le\c{s}tirildi\u{g}i dizi hizalama dosyas{\i} kullanarak tekrarl{\i} ve duplikasyon bak{\i}m{\i}ndan zengin b\"{o}lgelerde yap{\i}sal varyasyon ke\c{s}fi yapmakt{\i}r. Tekrarl{\i} b\"{o}lgelerdeki paraloglar{\i} birbirinden ay{\i}ran tekli \"{o}zel n\"{u}kleotidleri (SUN) kullan{\i}yoruz. Metodumuz okuma derinli\u{g}ine dayanmaktad{\i}r ve sadece duplikasyon ve silme i\c{s}lemlerini tespit etmekle s{\i}n{\i}rl{\i}d{\i}r. Genlerin mutlak kopya say{\i}lar{\i}n{\i} sadece SUN okuma derinli\u{g}ini kullanarak hesaplad{\i}k. Ayr{\i}ca, ayn{\i} segmental kopyada bulunan genler i\c{c}in paraloga \"{o}zg\"{u} mutlak kopya numaralar{\i}n{\i} da hesaplad{\i}k.
+Bu \c{c}al{\i}\c{s}mada bizim amac{\i}m{\i}z okumalar{\i}n tek bir lokasyonla e\c{s}le\c{s}tirildi\u{g}i dizi hizalama dosyas{\i} kullanarak segmental duplikasyonlarda paralog-\"{o}zg\"{u} kopya say{\i}s{\i} varyasyonu ke\c{s}fi yapmakt{\i}r. Tekrarl{\i} b\"{o}lgelerdeki paraloglar{\i} birbirinden ay{\i}ran tekli \"{o}zel n\"{u}kleotidleri (T\"{O}N) kullan{\i}yoruz. Metodumuz okuma derinli\u{g}ine dayanmaktad{\i}r ve sadece duplikasyon ve silme i\c{s}lemlerini tespit etmekle s{\i}n{\i}rl{\i}d{\i}r. Genlerin mutlak kopya say{\i}lar{\i}n{\i} sadece T\"{O}N okuma derinli\u{g}ini kullanarak hesaplad{\i}k. Ayr{\i}ca, ayn{\i} segmental kopyada bulunan genler i\c{c}in paraloga \"{o}zg\"{u} mutlak kopya numaralar{\i}n{\i} da hesaplad{\i}k.
 \end{ozet}
 
 \clearpage
